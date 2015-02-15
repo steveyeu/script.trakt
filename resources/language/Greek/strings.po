@@ -47,3 +47,7 @@ msgstr "Ταινίες"
 msgctxt "#1410"
 msgid "Service"
 msgstr "Υπηρεσία"
+
+msgctxt "#1700"
+msgid "Debug"
+msgstr "Εντοπισμός Σφαλμάτων"

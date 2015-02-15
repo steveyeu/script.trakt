@@ -47,3 +47,7 @@ msgstr "Elokuvat"
 msgctxt "#1410"
 msgid "Service"
 msgstr "Palvelu"
+
+msgctxt "#1700"
+msgid "Debug"
+msgstr "Vianetsintä"

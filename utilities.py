@@ -38,10 +38,14 @@ REGEX_EXPRESSIONS = [ '[Ss]([0-9]+)[][._-]*[Ee]([0-9]+)([^\\\\/]*)$',
 
 def Debug(msg, force = False):
 	if getSettingAsBool('debug') or force:
-		try:
-			xbmc.log("[script.trakt] %s" % msg, level=xbmc.LOGDEBUG)
-		except UnicodeEncodeError:
-			xbmc.log("[script.trakt] %s" % msg.encode('utf-8', 'ignore'), level=xbmc.LOGDEBUG)
+		debuglevel = xbmc.LOGNOTICE
+	else:
+		debuglevel = xbmc.LOGDEBUG
+
+	try:
+		xbmc.log("[trakt] %s" % msg, level=debuglevel)
+	except UnicodeEncodeError:
+		xbmc.log("[trakt] %s" % msg.encode('utf-8', 'ignore'), level=debuglevel)
 
 
 def notification(header, message, time=5000, icon=__addon__.getAddonInfo('icon')):
@@ -295,8 +299,8 @@ def findEpisodeMatchInList(id, seasonNumber, episodeNumber, list):
 				episode = season.episodes[episodeNumber]
 				return episode.to_dict()
 
-def kodiRpcToTraktMediaObject(type, data, mode='collected'):
-	if type == 'tvshow':
+def kodiRpcToTraktMediaObject(mode, data):
+	if mode == 'tvshow':
 		data['ids'] = {}
 		id = data.pop('imdbnumber')
 		if id.startswith("tt"):
@@ -305,7 +309,7 @@ def kodiRpcToTraktMediaObject(type, data, mode='collected'):
 			data['ids']['tvdb'] = id
 		del(data['label'])
 		return data
-	elif type == 'episode':
+	elif mode == 'episode':
 		if checkExclusion(data['file']):
 			return
 
@@ -326,14 +330,9 @@ def kodiRpcToTraktMediaObject(type, data, mode='collected'):
 			episode['watched_at'] = convertDateTimeToUTC(data['lastplayed'])
 		if 'dateadded' in data:
 			episode['collected_at'] = convertDateTimeToUTC(data['dateadded'])
-		if mode == 'watched' and episode['watched']:
-			return episode
-		elif mode == 'collected' and episode['collected']:
-			return episode
-		else:
-			return
+		return episode
 
-	elif type == 'movie':
+	elif mode == 'movie':
 		if checkExclusion(data.pop('file')):
 			return
 		if 'lastplayed' in data:
@@ -355,16 +354,16 @@ def kodiRpcToTraktMediaObject(type, data, mode='collected'):
 		del(data['label'])
 		return data
 	else:
-		Debug('[Utilities] kodiRpcToTraktMediaObject() No valid type')
+		Debug('[Utilities] kodiRpcToTraktMediaObject() No valid mode')
 		return
 
-def kodiRpcToTraktMediaObjects(data, mode='collected'):
+def kodiRpcToTraktMediaObjects(data):
 	if 'tvshows' in data:
 		shows = data['tvshows']
 
 		# reformat show array
 		for show in shows:
-			kodiRpcToTraktMediaObject('tvshow', show, mode)
+			kodiRpcToTraktMediaObject('tvshow', show)
 		return shows
 
 	elif 'episodes' in data:
@@ -375,7 +374,7 @@ def kodiRpcToTraktMediaObjects(data, mode='collected'):
 				s_no = episode['season']
 				a_episodes[s_no] = []
 			s_no = episode['season']
-			episodeObject = kodiRpcToTraktMediaObject('episode', episode, mode)
+			episodeObject = kodiRpcToTraktMediaObject('episode', episode)
 			if episodeObject:
 				a_episodes[s_no].append(episodeObject)
 
@@ -389,7 +388,7 @@ def kodiRpcToTraktMediaObjects(data, mode='collected'):
 
 		# reformat movie array
 		for movie in movies:
-			movieObject = kodiRpcToTraktMediaObject('movie', movie, mode)
+			movieObject = kodiRpcToTraktMediaObject('movie', movie)
 			if movieObject:
 				kodi_movies.append(movieObject)
 		return kodi_movies

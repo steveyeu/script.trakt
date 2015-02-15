@@ -47,3 +47,7 @@ msgstr "Filmler"
 msgctxt "#1410"
 msgid "Service"
 msgstr "Hizmet"
+
+msgctxt "#1700"
+msgid "Debug"
+msgstr "Hata ayıklama"

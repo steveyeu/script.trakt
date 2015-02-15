@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-import xbmc
 import xbmcaddon
 import math
 import logging
@@ -28,7 +27,7 @@ class traktAPI(object):
 		self.__token = getSetting('token')
 
 		# Configure
-		logging.basicConfig(format='[script.trakt] %(message)s', level=xbmc.LOGDEBUG)
+		logging.basicConfig(level=logging.INFO)
 		Trakt.configuration.defaults.client(
 			id=self.__apikey
 		)

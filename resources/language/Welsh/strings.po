@@ -47,3 +47,7 @@ msgstr "Ffilmiau"
 msgctxt "#1410"
 msgid "Service"
 msgstr "Gwasanaeth"
+
+msgctxt "#1700"
+msgid "Debug"
+msgstr "Dadfygio"
